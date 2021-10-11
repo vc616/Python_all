@@ -1,12 +1,23 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QFileDialog
-import xlrd
+# import xlrd
 # from xlutils.copy import copy
 import re
-import numpy as np
+# import numpy as np
 import openpyxl
+from openpyxl.styles import PatternFill
+# from openpyxl.styles import numbers
+from copy import copy
+
+
+import winreg
+# 获取桌面路径
+def get_desktop():
+    key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders')
+    return winreg.QueryValueEx(key, 'Desktop')[0]
+
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
@@ -69,8 +80,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def openfile(self):
         # openfile_name = QFileDialog.getOpenFileName(self,'选择文件','','Excel files(*.xlsx , *.xls)')
-        self.fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", "./",
-                                                               "Excel Files (*.xlsx , *.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
+        self.fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", get_desktop(),"Excel Files (*.xlsx , *.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
         print("打开文件名：", self.fileName1)
         self.lineEdit.setText(self.fileName1)
 
@@ -80,21 +90,25 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             newtable = tablename.replace(".xlsx", "(电气).xls")
         if tablename.endswith(".xls"):
             newtable = tablename.replace(".xls", "(电气).xls")
-        print("新文件名：", newtable)
-        book = xlrd.open_workbook(tablename)  # 打开一个excel,根据excel文件格式写后缀
-        sheet = book.sheet_by_index(0)  # 根据顺序获取sheet,0表示第一个sheet
-
-        old_content = copy(book)
-        ws = old_content.get_sheet(0)
-        # print("测试01")
+        # print("新文件名：", newtable)
+        book1 = openpyxl.load_workbook(tablename)
+        # print(book1.sheetnames)
+        w1 = book1[book1.sheetnames[0]]
+        max_r = w1.max_row
+        max_c = w1.max_column
+        # print(max_r,max_c)
         gjc = ["数量", "序号", "名称", "规格", "材质", "备注", "品牌", "单位"]
-        tj = []
-        nrows = sheet.nrows
-        print("总行数：", nrows)
-        for i in range(nrows):
-            # print(i)
+        tj = [0]
+
+        print("总行数：", max_r,"总列数：", max_c)
+
+        for i in range(max_r):
+            i = i +1
             tj.append(0)
-            h = sheet.row_values(i)
+            h = []
+            for cell in w1[i]:
+                # print(cell.value)
+                h.append(cell.value)
             for j in h:
                 for k in gjc:
                     match = re.search(k, str(j))
@@ -103,36 +117,60 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # print(tj)
         bth = tj.index(max(tj))
         print("标题行：", bth)
+
+        # print(tj[bth])
         if tj[bth] > 3:
-            y = sheet.row_values(bth)
+            y = []
+            for cell in w1[bth]:
+                # print(cell.value)
+                y.append(cell.value)
+            # y = sheet.row_values(bth)
+            print(y)
             f_guige = 1000
             f_num = 1000
             for i in range(len(y)):
                 if "规格" in str(y[i]):
                     print(y[i], "第", i, "列")
-                    f_guige = i
+                    f_guige = i +1
                 if "数量" == str(y[i]):
                     print(y[i], "第", i, "列")
-                    f_num = i
+                    f_num = i +1
+            # ff = w1.cell(row = bth,column=f_guige).font
+            # print(type(ff))
+            # print(Font(name=u'宋体', size=12, bold=True, color='FF0000'))
 
-            # i = len(y)
-            # print("总行数：", i)
-            f_kw = i + 1
-            ws.write(bth, f_kw, "设备功率")
-            f_skw = i + 2
-            ws.write(bth, f_skw, "总功率")
-            f_bp = i + 3
-            ws.write(bth, f_bp, "变频数量")
-            f_zq = i + 4
-            ws.write(bth, f_zq, "直启数量")
-            f_11 = i + 5
-            ws.write(bth, f_11, "<11kW")
-            f_22 = i + 6
-            ws.write(bth, f_22, "11-22kW")
-            f_75 = i + 7
-            ws.write(bth, f_75, "22-75kW")
-            f_other = i + 8
-            ws.write(bth, f_other, ">75kW")
+            f_kw = max_c + 1
+            w1.cell(row=bth, column=f_kw, value="设备功率").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_kw).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_kw).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_skw = max_c + 2
+            w1.cell(row=bth, column=f_skw, value="总功率").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_skw).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_skw).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_bp = max_c + 3
+            w1.cell(row=bth, column=f_bp, value="变频数量").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_bp).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_bp).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_zq = max_c + 4
+            w1.cell(row=bth, column=f_zq, value="直启数量").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_zq).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_zq).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_11 = max_c + 5
+            w1.cell(row=bth, column=f_11, value="<11kW").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_11).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_11).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_22 = max_c + 6
+            w1.cell(row=bth, column=f_22, value="11-22kW").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_22).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_22).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_75 = max_c + 7
+            w1.cell(row=bth, column=f_75, value="22-75kW").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_75).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_75).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_other = max_c + 8
+            w1.cell(row=bth, column=f_other, value=">75kW").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_other).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_other).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
             sum_kw = 0.0
             sum_zq = 0
             sum_bp = 0
@@ -140,70 +178,96 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             sum_22 = 0
             sum_75 = 0
             sum_other = 0
-            # print("测试点01")
             if f_guige == 1000 or f_num == 1000:
                 print("在标题行中未找到规格或数量列")
             else:
-                for i in range(nrows):  # 获取excel中有多少行
-                    # for i in range(1, 11, 1):
-                    # print(i)
+                for i in range(max_r):  # 获取excel中有多少行
+                    i = i +1
                     if i > bth:
-
-                        r1 = sheet.cell(i, f_guige).value
+                        r1 = w1.cell(row=i,column=f_guige).value
+                        # r1 = sheet.cell(i, f_guige).value
                         # print(i, r1)
-                        t = sheet.cell(i, f_num).value
+                        t = w1.cell(row=i,column=f_num).value
+                        # t = sheet.cell(i, f_num).value
                         r2 = str(r1)
                         r = r2.replace(" ", "")
                         r = r.replace(" ", "")
                         #print(r)
                         #print(np.fromstring(r1, dtype=np.uint8))
                         s1 = re.search("\d*\.?\d*[kK][wW]", r)
-                        print(i, r, s1)
+                        # print(i, r, s1)
                         if s1:
                             s2 = s1.group()
                             # print("S2:", s2)
                             s3 = float(s2[:len(s2) - 2])
-                            ws.write(i, f_kw, s3)
-                            ws.write(i, f_skw, t * s3)
+                            w1.cell(row=i,column=f_kw,value=s3).fill = PatternFill(fill_type='solid', start_color='00DB00')
+                            w1.cell(row=i,column=f_skw,value=t*s3)
+                            # ws.write(i, f_kw, s3)
+                            # ws.write(i, f_skw, t * s3)
                             sum_kw = sum_kw + t * s3
                             k1 = re.search("变频", r)
                             if k1:
-                                ws.write(i, f_bp, t)
+                                w1.cell(row=i,column=f_bp,value=t)
+                                # ws.write(i, f_bp, t)
                                 sum_bp = sum_bp + t
                             else:
-                                ws.write(i, f_zq, t)
+                                w1.cell(row=i,column=f_zq,value=t)
+                                # ws.write(i, f_zq, t)
                                 sum_zq = sum_zq + t
 
                                 if s3 <= 11:
-                                    ws.write(i, f_11, t)
+                                    w1.cell(row=i,column=f_11,value=t)
+                                    # ws.write(i, f_11, t)
                                     sum_11 = sum_11 + t
                                 elif s3 <= 22 and s3 > 11:
-                                    ws.write(i, f_22, t)
+                                    w1.cell(row=i,column=f_22,value=t)
+                                    # ws.write(i, f_22, t)
                                     sum_22 = sum_22 + t
                                 elif s3 <= 75 and s3 > 22:
-                                    ws.write(i, f_75, t)
+                                    w1.cell(row=i,column=f_75,value=t)
+                                    # ws.write(i, f_75, t)
                                     sum_75 = sum_75 + t
                                 elif s3 > 75:
-                                    ws.write(i, f_other, t)
+                                    w1.cell(row=i,column=f_other,value=t)
+                                    # ws.write(i, f_other, t)
                                     sum_other = sum_other + t
                         else:
+                            # w1.cell(row=i,column=f_kw).fill = PatternFill(fill_type='solid', start_color='00DB00')
                             #print("pass")
                             pass
-                ws.write(i + 1, f_skw, sum_kw)
-                ws.write(i + 1, f_bp, sum_bp)
-                ws.write(i + 1, f_zq, sum_zq)
-                ws.write(i + 1, f_11, sum_11)
-                ws.write(i + 1, f_22, sum_22)
-                ws.write(i + 1, f_75, sum_75)
-                ws.write(i + 1, f_other, sum_other)
-                #print("测试点02")
-                try:
-                    old_content.save(newtable)
-                    print("新文件保存成功")
-                except:
-                    print("文件保存失败")
+                w1.cell(row=max_r+1,column=f_skw,value=sum_kw)  
+                w1.cell(row=max_r+1,column=f_bp,value=sum_bp) 
+                w1.cell(row=max_r+1,column=f_zq,value=sum_zq) 
+                w1.cell(row=max_r+1,column=f_11,value=sum_11) 
+                w1.cell(row=max_r+1,column=f_22,value=sum_22) 
+                w1.cell(row=max_r+1,column=f_75,value=sum_75) 
+                w1.cell(row=max_r+1,column=f_other,value=sum_other) 
+
+                # ws.write(i + 1, f_skw, sum_kw)
+                # ws.write(i + 1, f_bp, sum_bp)
+                # ws.write(i + 1, f_zq, sum_zq)
+                # ws.write(i + 1, f_11, sum_11)
+                # ws.write(i + 1, f_22, sum_22)
+                # ws.write(i + 1, f_75, sum_75)
+                # ws.write(i + 1, f_other, sum_other)
+                # #print("测试点02")
+
         else:
             print("未找到标题行")
+        try:
+            book1.save(newtable)
+            print("新文件保存成功")
+        except:
+            print("文件保存失败")
+        
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

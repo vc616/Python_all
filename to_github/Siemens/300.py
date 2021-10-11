@@ -41,7 +41,7 @@ def readfile():
     b = []
     for root, dirs, files in os.walk(os.getcwd()):
         a = files[:]
-    # print(a)
+    print(a)
     for i in a:
         w = i.lower()
         if w.endswith(".csv") == True:

@@ -52,7 +52,10 @@ def try_sudoku(m:"数独矩阵", x:"空白格行数", y:"空白格列数"):
 def sudoku(m):        
     x, y = start_pos(m)
     try_sudoku(m, x, y)
-    print(m)     
+    for i in m:
+        
+        print(i)
+    # print(m)     
 
 
 

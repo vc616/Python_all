@@ -10,10 +10,13 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
 import time
+import sys
+sys.path.append("c:\\")
+from key import k
 
-my_sender = "vc616@qq.com"  # 发件人邮箱账号
-my_pass = "mtnvaffnymivbjif"  # 发件人邮箱密码
-my_user = ["vc616@qq.com", ]  # 收件人邮箱账号
+my_sender = k.my_sender  # 发件人邮箱账号
+my_pass = k.email_pass  # 发件人邮箱密码
+my_user = [k.my_sender , ]  # 收件人邮箱账号
 import time
 n = "zjn"
 # n = "cvc"
@@ -167,15 +170,14 @@ while 1:
     s = []
     r = []
     if (localtime.tm_min in sendtime) :
-        # s.append(dwhua("13466648179","Nova 8","160218vc"))
+        # s.append(dwhua(k.nova8,"Nova 8",k.nova8_pass))
         # print(s)
         # time.sleep(60)
-        s.append(dwhua("18811505321","Mate 40","160218cvcAzjn"))
+        s.append(dwhua(k.mate40_phone,"Mate 40",k.mate40_pass))
         # print(s)
-        # s = [['Nova 8（北京市）', '<p>地址：北京市大兴区北京经济技术开发区朝林大厦A座朝林广场</p>\r\n  <p>wifi：LINK66_5G</p>\r\n<p>电量：100%<p>', 'C:/Users/VM/Desktop/screenshot/Nova 8-2021-09-13-11_44_02.png'], ['Mate 40（北京市）', '<p>地址：北京市大兴区北京经济技术开发区北京</p>\r\n  <p>wifi：OFFICE 5G</p>\r\n<p>电量：42%<p>', 'C:/Users/VM/Desktop/screenshot/Mate 40-2021-09-13-11_44_48.png']] 
         # email(s)
-        # s.append(dwmi("13466648179","Mi9","160218cvcAzjn"))
-        # s.append(dwmi("13582388147","Mi8","160218cvcAzjn"))
+        # s.append(dwmi(k.mi9_phone,"Mi9"，k.mi9_pass))
+        # s.append(dwmi(k.mi8_phone,"Mi8",k.mi8_pass))
         r = s[:]
         if l == []:
             send(email(s))

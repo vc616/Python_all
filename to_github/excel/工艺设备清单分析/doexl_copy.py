@@ -5,12 +5,11 @@ from PyQt5.QtWidgets import QFileDialog
 # import xlrd
 # from xlutils.copy import copy
 import re
-# import numpy as np
-import openpyxl
+# import numpy as npimport openpyxl
 from openpyxl.styles import PatternFill
 # from openpyxl.styles import numbers
 from copy import copy
-
+import openpyxl
 
 import winreg
 # 获取桌面路径
@@ -75,21 +74,22 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                             "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
                                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">说明：1、请确保标题行中有“规格”、“数量”关键字。</p>\n"
                                             "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">      2、请确设备清单位于表格第一个sheet。</p>\n"
+                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">      3、只能处理扩展名为xlsx的文档。</p>\n"
                                             "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
                                             "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
 
     def openfile(self):
         # openfile_name = QFileDialog.getOpenFileName(self,'选择文件','','Excel files(*.xlsx , *.xls)')
-        self.fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", get_desktop(),"Excel Files (*.xlsx , *.xls)")  # 设置文件扩展名过滤,注意用双分号间隔
+        self.fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", get_desktop(),"Excel Files (*.xlsx)")  # 设置文件扩展名过滤,注意用双分号间隔
         print("打开文件名：", self.fileName1)
         self.lineEdit.setText(self.fileName1)
 
     def excel_ds(self):
         tablename = self.fileName1
         if tablename.endswith(".xlsx"):
-            newtable = tablename.replace(".xlsx", "(电气).xls")
-        if tablename.endswith(".xls"):
-            newtable = tablename.replace(".xls", "(电气).xls")
+            newtable = tablename.replace(".xlsx", "(电气).xlsx")
+        # if tablename.endswith(".xls"):
+            # newtable = tablename.replace(".xls", "(电气).xls")
         # print("新文件名：", newtable)
         book1 = openpyxl.load_workbook(tablename)
         # print(book1.sheetnames)
@@ -191,7 +191,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         # t = sheet.cell(i, f_num).value
                         r2 = str(r1)
                         r = r2.replace(" ", "")
-                        r = r.replace(" ", "")
+                        r = r.replace(" ", "")
                         #print(r)
                         #print(np.fromstring(r1, dtype=np.uint8))
                         s1 = re.search("\d*\.?\d*[kK][wW]", r)
@@ -258,16 +258,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             book1.save(newtable)
             print("新文件保存成功")
         except:
-            print("文件保存失败")
-        
-
-
-
-
-
-
-
-
+            print("文件保存失败")   
 
 
 if __name__ == "__main__":

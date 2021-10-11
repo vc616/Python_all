@@ -8,7 +8,7 @@ import smtplib
 import sys
 import os
 
-sys.path.append("..")
+sys.path.append("c:\\")
 from key import k
 
 my_sender = "vc616@qq.com"

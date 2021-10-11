@@ -3,7 +3,9 @@ import requests
 import time
 import datetime
 import re
-
+import sys
+sys.path.append("c:\\")
+from key import k
 
 class XiaomiSport:
     def __init__(self, phone, password, step):
@@ -146,7 +148,7 @@ if __name__ == "__main__":
             try:
                 # 执行一键修改步数
                 step = random.randint(13000,15000)  # 随机8000-10000步数
-                XiaomiSport('13466648179', '160218cvcAzjn', step).one_click_change_step()
+                XiaomiSport(k.mi9_phone, k.mi9_pass, step).one_click_change_step()
                 # print(step)
                 break
             except Exception as e:

@@ -3,6 +3,11 @@ import hashlib
 import json
 import time
 import random
+
+import sys
+sys.path.append("c:\\")
+from key import k
+
 requests.packages.urllib3.disable_warnings
 def md5(code):
     res=hashlib.md5()
@@ -139,8 +144,8 @@ def main():
 
 # -- 配置 --
 # ------------------------------
-phone = '13466648179'  # 登陆账号
-password = '160218vc'  # 密码
+phone = k.mi9_phone # 登陆账号
+password = k.mi9_pass  # 密码
 step = random.randint(32000,42000)  # 随机8000-10000步数
 sckey = ''  # server酱key(可空)
 ktkey = ''  # 酷推key(可空)

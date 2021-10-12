@@ -68,7 +68,8 @@ def dwhua(shoujihao,m,key):
         s = ard.find("市") + 1
         w = ard[0:s]
         title =  m +"（" + w + "）"
-        text = "<p>地址：" + ard + "</p>\r\n  <p>wifi：" + wifi + "</p>\r\n<p>电量：" + dianliang +"<p>"
+        current_time1 = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+        text = "<p>地址：" + ard + "</p>\r\n  <p>wifi：" + wifi + "</p>\r\n<p>电量：" + dianliang +"<p>\r\n<p>时间：" + current_time1 +"<p>"
         browser.quit()
         return [title,text,path,ard]
     except Exception:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False

@@ -14,13 +14,13 @@ import sys
 sys.path.append("c:\\")
 from key import k
 
-my_sender = k.my_sender  # 发件人邮箱账号
+my_sender = "vc616@qq.com"  # 发件人邮箱账号
 my_pass = k.email_pass  # 发件人邮箱密码
 my_user = [k.my_sender , ]  # 收件人邮箱账号
 import time
 n = "zjn"
 # n = "cvc"
-sendtime = [0,15,30,45]
+sendtime = [0,30]
 
 if os.path.exists( 'c:\\screenshot' ) == False: 
     os.makedirs( 'c:\\screenshot' )
@@ -120,8 +120,11 @@ def dwmi(shoujihao,m,key):
 def email(st):
     
     msg = MIMEMultipart('related')
-    msg['From'] = Header("vc616@qq.com", 'utf-8')
-    msg['To'] =  Header("vc616@qq.com", 'utf-8')
+    # msg['From'] = Header("vc616@qq.com", 'utf-8')
+    msg["From"] = formataddr(["vc",my_sender])
+    # msg['To'] =  Header("vc616@qq.com", 'utf-8')
+    msg["To"] = formataddr(["vc",my_sender])
+
     subject = "GPS"
     msg['Subject'] = Header(subject, 'utf-8')
 

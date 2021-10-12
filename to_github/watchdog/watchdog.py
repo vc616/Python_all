@@ -4,6 +4,9 @@ import pymysql
 from datetime import datetime
 
 import sys
+import sys
+sys.path.append("c:\\")
+from key import k
 
 sys.path.append("..")
 # from key import k
@@ -13,7 +16,7 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 
 my_sender = "vc616@qq.com"  # 发件人邮箱账号
-my_pass = "hcmjmmanwpiecadf"  # 发件人邮箱密码
+my_pass = "k.email_pass"  # 发件人邮箱密码
 my_user = ["vc616@qq.com", ]  # 收件人邮箱账号
 
 sys.path.insert(0, "..")

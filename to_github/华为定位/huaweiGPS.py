@@ -32,16 +32,17 @@ def dwhua(shoujihao,m,key):
     path = "C:/screenshot/" + m +"-" +current_time + ".png"
     print(current_time,path)
     try:
+
         browser.get("https://cloud.huawei.com/")
         
         # browser.maximize_window()
         time.sleep(3)
         browser.set_window_size(1400,1060)
         browser.switch_to.frame("frameAddress")
-        browser.find_element_by_id("login_userName").send_keys(shoujihao)
-        browser.find_element_by_id("login_password").send_keys(key)
+        browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/form/div[3]/div/div/div/input").send_keys(shoujihao)
+        browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/form/div[4]/div/div/div/input").send_keys(key)
         time.sleep(1)
-        browser.find_element_by_id("btnLogin").click()
+        browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/div/div/div").click()
         time.sleep(3)
         browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[9]/div/div/div[6]/div[1]/div").click()
         time.sleep(30)
@@ -53,12 +54,12 @@ def dwhua(shoujihao,m,key):
             ard = "读取网页信息错误"
         try:            
             wifi = browser.find_element_by_xpath("/html/body/div[1]/div[5]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]").text
-                                                 
+                                                    
         except:
             wifi = "无"
         try:
             dianliang = browser.find_element_by_xpath("/html/body/div[1]/div[5]/div[6]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]").text
-       
+        
         except:            
             dianliang = "无"
         # print("2")
@@ -74,7 +75,7 @@ def dwhua(shoujihao,m,key):
         return [title,text,path,ard]
     except Exception:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
         print("定位失败")
-        return["","","",""]   
+        return["网页打开失败","网页打开失败","网页打开失败","网页打开失败"]   
 
 
 def dwmi(shoujihao,m,key):
@@ -161,10 +162,7 @@ def send(msg):
         print("邮件发送成功")
     except Exception:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
         print("邮件发送失败")
-
-    
-
-
+ 
 
     
 l = []
@@ -173,10 +171,11 @@ while 1:
     localtime = time.localtime(time.time())
     s = []
     r = []
-    if (localtime.tm_min in sendtime) :
+    if (localtime.tm_min  in sendtime) :
         # s.append(dwhua(k.nova8,"Nova 8",k.nova8_pass))
         # print(s)
         # time.sleep(60)
+        
         s.append(dwhua(k.mate40_phone,"Mate 40",k.mate40_pass))
         # print(s)
         # email(s)

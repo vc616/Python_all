@@ -20,7 +20,7 @@ my_user = [k.my_sender , ]  # 收件人邮箱账号
 import time
 n = "zjn"
 # n = "cvc"
-sendtime = [0,30]
+sendtime = [58,28]
 
 if os.path.exists( 'c:\\screenshot' ) == False: 
     os.makedirs( 'c:\\screenshot' )
@@ -44,21 +44,29 @@ def dwhua(shoujihao,m,key):
         time.sleep(1)
         browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/div/div/div").click()
         time.sleep(3)
+        try:
+            browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[5]/div[2]/div[2]/div[1]").click()
+            time.sleep(1) 
+        except:
+            pass
+
         browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[9]/div/div/div[6]/div[1]/div").click()
-        time.sleep(30)
+        time.sleep(120)
         # print("1")
         # browser.maximize_window()
-        try:
-            ard = browser.find_element_by_xpath("/html/body/div[1]/div[5]/div[6]/div[2]/div[1]/div[1]").text
+        try:              
+            ard = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[1]").text
+                                                #  /html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[1]
         except:
             ard = "读取网页信息错误"
         try:            
-            wifi = browser.find_element_by_xpath("/html/body/div[1]/div[5]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]").text
+            wifi = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]").text
+                                                #   /html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]
                                                     
         except:
             wifi = "无"
         try:
-            dianliang = browser.find_element_by_xpath("/html/body/div[1]/div[5]/div[6]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]").text
+            dianliang = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]").text
         
         except:            
             dianliang = "无"
@@ -202,7 +210,7 @@ while 1:
 
     else:
         print(localtime.tm_hour,":",localtime.tm_min)
-    time.sleep(30)
+    time.sleep(1)
 
 
 

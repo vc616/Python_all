@@ -1,4 +1,4 @@
-﻿# -*- mode: python ; coding: utf-8 -*-
+# -*- mode: python ; coding: utf-8 -*-
 
 
 block_cipher = None
@@ -7,8 +7,8 @@ block_cipher = None
 a = Analysis(['C:\\Users\\vm\\Documents\\python_all\\to_github\\QGUI界面\\NewGUI.py'],
              pathex=['C:\\Users\\vm\\Documents\\python_all'],
              binaries=[],
-             datas=[('C:\\Users\\vm\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\ttkbootstrap', 'ttkbootstrap')],
-             hiddenimports=['ttkbootstrap'],
+             datas=[],
+             hiddenimports=[],
              hookspath=[],
              hooksconfig={},
              runtime_hooks=[],
@@ -33,7 +33,7 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False,
+          console=True,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,

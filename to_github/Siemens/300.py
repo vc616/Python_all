@@ -39,6 +39,7 @@ def readfile():
     device_and_name = []
     a = []
     b = []
+    print(os.getcwd())
     for root, dirs, files in os.walk(os.getcwd()):
         a = files[:]
     print(a)
@@ -699,6 +700,7 @@ if __name__ == "__main__":
     # s.readcf()
     s.sync()
     print("配置文件与数据库同步完毕。")
+    # print(dict)
     if dict != {}:
         print("开始读取并上传数据。")
         # print("shuchu",dict)

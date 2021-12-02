@@ -20,7 +20,7 @@ my_user = [k.my_sender , ]  # 收件人邮箱账号
 import time
 n = "zjn"
 # n = "cvc"
-sendtime = [58,28]
+sendtime = [0,30]
 
 if os.path.exists( 'c:\\screenshot' ) == False: 
     os.makedirs( 'c:\\screenshot' )
@@ -41,7 +41,7 @@ def dwhua(shoujihao,m,key):
         browser.switch_to.frame("frameAddress")
         browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/form/div[3]/div/div/div/input").send_keys(shoujihao)
         browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/form/div[4]/div/div/div/input").send_keys(key)
-        time.sleep(1)
+        # time.sleep(3)
         browser.find_element_by_xpath("/html/body/div/div[1]/div[4]/div[1]/div/div/div").click()
         time.sleep(3)
         try:
@@ -51,28 +51,46 @@ def dwhua(shoujihao,m,key):
             pass
 
         browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[9]/div/div/div[6]/div[1]/div").click()
-        time.sleep(120)
+        time.sleep(3)
         # print("1")
         # browser.maximize_window()
-        try:              
-            ard = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[1]").text
+        s1 = 1
+        t1 = 0
+        s2 = ""
+        while(s1 == 1):
+            try:
+                s2 = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[2]/span[1]").text
+                print(s2)                
+            except:
+                pass
+                
+            if (t1 > 30):
+                break
+            if s2 == "刚刚更新" :
+                try:              
+                    ard = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[1]").text
                                                 #  /html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[1]
-        except:
-            ard = "读取网页信息错误"
-        try:            
-            wifi = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]").text
-                                                #   /html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]
-                                                    
-        except:
-            wifi = "无"
-        try:
-            dianliang = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]").text
-        
-        except:            
-            dianliang = "无"
+                except:
+                    ard = "读取网页信息错误"
+                try:            
+                    wifi = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]").text
+                                                        #   /html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[2]/div/span[2]                                                    
+                except:
+                    wifi = "无"
+                try:
+                    dianliang = browser.find_element_by_xpath("/html/body/div[1]/div[6]/div[6]/div[2]/div[1]/div[3]/div[1]/div/div/div[2]").text        
+                except:            
+                    dianliang = "无"
+                break
+            t1 = t1 + 1
+            time.sleep(1)
+            print("等待定位：",t1)
         # print("2")
         browser.save_screenshot(path)
-        
+        if ard == "":
+            ard = "读取网页信息错误"
+            wifi = "无"
+            dianliang = "无"
         print("地址：",ard,"wifi：",wifi,"电量：",dianliang)
         s = ard.find("市") + 1
         w = ard[0:s]
@@ -210,7 +228,7 @@ while 1:
 
     else:
         print(localtime.tm_hour,":",localtime.tm_min)
-    time.sleep(1)
+    time.sleep(10)
 
 
 

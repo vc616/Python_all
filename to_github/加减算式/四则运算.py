@@ -61,14 +61,14 @@ def DD():
         ss = str(c) + "＋" + str(a*b) + "÷" + str(a) +  "＝" + "___"
         return(ss,str(b+c))
     else:
-        c = random.randint(b, 99)
+        c = random.randint(b, 99)  
         #print(str(c) + "－" + str(a*b)+"÷"+str(a) + "＝" + str(c-b))
         ss = str(c) + "－" + str(a*b)+"÷"+str(a) + "＝" + "___"
         return(ss,str(c-b))
 w1 = []
 w2 = []
 
-for i in range(100):
+for i in range(300):
     s = random.randint(1, 4)
     if s == 1:
         e = AA()        

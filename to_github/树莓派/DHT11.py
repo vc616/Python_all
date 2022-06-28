@@ -79,7 +79,7 @@ def sql(h,t):
 
     db = pymysql.connect(host= '111.207.218.252', port= 8016, user= 'root', password= '160218vc',db = "test" )
     cursor = db.cursor()
-    sq = """INSERT INTO test.温度 (temperature, humidity) VALUES( """ + t + """, """ + h + """)"""
+    sq = """INSERT INTO test.温度 (temperature, humidity) VALUES( """ + str(t) + """, """ + str(h) + """)"""
     try:
         # 执行sql语句
         cursor.execute(sq)
@@ -90,6 +90,7 @@ def sql(h,t):
         db.rollback()
     # 关闭数据库连接
     db.close()
+    print("mysql OK")
 
 
 
@@ -98,31 +99,39 @@ def sql(h,t):
 
 def main():
     print("Raspberry Pi DHT11 Temperature test program\n")
-    time.sleep(3)           #通电后前一秒状态不稳定，时延一秒
+    time.sleep(1)           #通电后前一秒状态不稳定，时延一秒
     avgh = 0
     avgt = 0
     sumh = 0
     sumt = 0
     t = 0
+    i = 0
 
     while True:
         if int(time.time()) % 10 == 0:
-            if t < 6:            
-                result = read_dht11_dat()
-                if result :
-                    humidity, temperature = result
-                    sumh = sumh + humidity
-                    sumt = sumt + temperature
-                    i = i +1
-                if result == False:
-                    print("Data are wrong,skip\n")                    
-                t = t +1                
-                if t == 5:
-                    avgh = sumh / i
-                    avgt = sumt / i
-                    sql(avgh,avgt)
-                    t = 0
+            
+            result = read_dht11_dat()
+            if result :
+                humidity, temperature = result
+                sumh = sumh + humidity
+                sumt = sumt + temperature
+                i = i +1
+                print(sumh,sumt,i)
+            if result == False:
+                print("Data are wrong,skip\n")                    
+               
+            if int(time.time()) % 60 == 0:
+                avgh = sumh / i
+                avgt = sumt / i
+                sql(avgh,avgt)
+                t = 0
+                i = 0
+                avgh = 0
+                avgt = 0
+                sumh = 0
+                sumt = 0
         time.sleep(1)
+        print(time.time())
 
             
 def destroy():

@@ -1,11 +1,14 @@
 #!/usr/bin/env python
+import sys
+sys.path.append("/home/vc/.local/lib/python3.9/site-packages/")
 import RPi.GPIO as GPIO
 import numpy as np
 import time
 import pymysql
 
+print(sys.path)                                
 
-DHTPIN = 21         #引脚号17
+DHTPIN = 21         #引脚号21
 
 GPIO.setmode(GPIO.BCM)      #以BCM编码格式
 
@@ -46,37 +49,29 @@ def read_dht11_dat():
         if k < 8:       #26-28 微秒时高电平时通常k等于5或6
             data.append(0)      #在数据列表后面添加一位新的二进制数据“0”
         else:           #70 微秒时高电平时通常k等于17或18
-            data.append(1)      #在数据列表后面添加一位新的二进制数据“1”
- 
-        j += 1
- 
+            data.append(1)      #在数据列表后面添加一位新的二进制数据“1” 
+        j += 1 
     #print("sensor is working.")
     #print('初始数据高低电平:\n',data)    #输出初始数据高低电平
-    #print('参数k的列表内容：\n',kk )     #输出高电平结束后的k值
-    
+    #print('参数k的列表内容：\n',kk )     #输出高电平结束后的k值    
     m = np.logspace(7,0,8,base=2,dtype=int) #logspace()函数用于创建一个于等比数列的数组
     #即[128 64 32 16 8 4 2 1]，8位二进制数各位的权值
     data_array = np.array(data) #将data列表转换为数组
-
     #dot()函数对于两个一维的数组，计算的是这两个数组对应下标元素的乘积和(数学上称之为内积)
     humidity = m.dot(data_array[0:8])           #用前8位二进制数据计算湿度的十进制值
     humidity_point = m.dot(data_array[8:16])
     temperature = m.dot(data_array[16:24])
     temperature_point = m.dot(data_array[24:32])
-    check = m.dot(data_array[32:40])
-    
-    #print(humidity,humidity_point,temperature,temperature_point,check)
-    
+    check = m.dot(data_array[32:40])    
+    #print(humidity,humidity_point,temperature,temperature_point,check)    
     tmp = humidity + humidity_point + temperature + temperature_point
-    #十进制的数据相加
- 
+    #十进制的数据相加 
     if check == tmp:    #数据校验，相等则输出
         return humidity, temperature
     else:               #错误输出错误信息
         return False
  
 def sql(h,t):
-
     db = pymysql.connect(host= '111.207.218.252', port= 8016, user= 'root', password= '160218vc',db = "test" )
     cursor = db.cursor()
     sq = """INSERT INTO test.温度 (temperature, humidity) VALUES( """ + str(t) + """, """ + str(h) + """)"""
@@ -108,8 +103,7 @@ def main():
     i = 0
 
     while True:
-        if int(time.time()) % 10 == 0:
-            
+        if int(time.time()) % 10 == 0:            
             result = read_dht11_dat()
             if result :
                 humidity, temperature = result
@@ -118,18 +112,20 @@ def main():
                 i = i +1
                 print(sumh,sumt,i)
             if result == False:
-                print("Data are wrong,skip\n")                    
-               
+                print("Data are wrong,skip\n")
             if int(time.time()) % 60 == 0:
-                avgh = sumh / i
-                avgt = sumt / i
-                sql(avgh,avgt)
-                t = 0
-                i = 0
-                avgh = 0
-                avgt = 0
-                sumh = 0
-                sumt = 0
+                try:
+                    avgh = sumh / i
+                    avgt = sumt / i
+                    sql(avgh,avgt)
+                    t = 0
+                    i = 0
+                    avgh = 0
+                    avgt = 0
+                    sumh = 0
+                    sumt = 0
+                except:
+                    pass
         time.sleep(1)
         print(time.time())
 

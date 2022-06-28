@@ -2,7 +2,9 @@
 import RPi.GPIO as GPIO
 import numpy as np
 import time
- 
+import pymysql
+
+
 DHTPIN = 21         #引脚号17
 
 GPIO.setmode(GPIO.BCM)      #以BCM编码格式
@@ -73,21 +75,55 @@ def read_dht11_dat():
     else:               #错误输出错误信息
         return False
  
+def sql(h,t):
+
+    db = pymysql.connect(host= '111.207.218.252', port= 8016, user= 'root', password= '160218vc',db = "test" )
+    cursor = db.cursor()
+    sq = """INSERT INTO test.温度 (temperature, humidity) VALUES( """ + t + """, """ + h + """)"""
+    try:
+        # 执行sql语句
+        cursor.execute(sq)
+        # 提交到数据库执行
+        db.commit()
+    except:
+        # 如果发生错误则回滚
+        db.rollback()
+    # 关闭数据库连接
+    db.close()
+
+
+
+
+
+
 def main():
     print("Raspberry Pi DHT11 Temperature test program\n")
-    time.sleep(1)           #通电后前一秒状态不稳定，时延一秒
-    while True:
-        result = read_dht11_dat()
-        if result:
-            humidity, temperature = result
-            print("湿度: %s %%,  温度: %s  ℃" % \
-                  (humidity, temperature))
-            print ('\n' )
-            time.sleep(1)
+    time.sleep(3)           #通电后前一秒状态不稳定，时延一秒
+    avgh = 0
+    avgt = 0
+    sumh = 0
+    sumt = 0
+    t = 0
 
-        if result == False:
-            print("Data are wrong,skip\n")
-            time.sleep(1)
+    while True:
+        if int(time.time()) % 10 == 0:
+            if t < 6:            
+                result = read_dht11_dat()
+                if result :
+                    humidity, temperature = result
+                    sumh = sumh + humidity
+                    sumt = sumt + temperature
+                    i = i +1
+                if result == False:
+                    print("Data are wrong,skip\n")                    
+                t = t +1                
+                if t == 5:
+                    avgh = sumh / i
+                    avgt = sumt / i
+                    sql(avgh,avgt)
+                    t = 0
+        time.sleep(1)
+
             
 def destroy():
     GPIO.cleanup()

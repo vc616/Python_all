@@ -4,12 +4,12 @@ pygame.init()
 font1=pygame.font.SysFont('microsoftyaheimicrosoftyaheiui',23)
 textc=font1.render('*',True,(250,0,0))
 screen=pygame.display.set_mode((800,700),0,32)
-missile=pygame.image.load(r'python_all\to_github\游戏\rect1.png').convert_alpha()
+missile=pygame.image.load(r'python_all\to_github\游戏\rect.png').convert_alpha()
 height=missile.get_height()
 width=missile.get_width()
 pygame.mouse.set_visible(0)
-x1,y1=100,600           #导弹的初始发射位置
-velocity=800            #导弹速度
+x1,y1=0,600           #导弹的初始发射位置
+velocity=400            #导弹速度
 time=1/1000             #每个时间片的长度
 clock=pygame.time.Clock()
 A=()

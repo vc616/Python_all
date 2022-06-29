@@ -75,14 +75,17 @@ def sql(h,t):
     db = pymysql.connect(host= '111.207.218.252', port= 8016, user= 'root', password= '160218vc',db = "test" )
     cursor = db.cursor()
     sq = """INSERT INTO test.温度 (temperature, humidity) VALUES( """ + str(t) + """, """ + str(h) + """)"""
-    try:
-        # 执行sql语句
-        cursor.execute(sq)
-        # 提交到数据库执行
-        db.commit()
-    except:
-        # 如果发生错误则回滚
-        db.rollback()
+    for i in range(6):
+        try:
+            # 执行sql语句
+            cursor.execute(sq)
+            # 提交到数据库执行
+            db.commit()
+            break
+        except:
+            # 如果发生错误则回滚
+            db.rollback()
+        time.sleep(1)
     # 关闭数据库连接
     db.close()
     print("mysql OK")
@@ -117,6 +120,8 @@ def main():
                 try:
                     avgh = sumh / i
                     avgt = sumt / i
+                    avgh = ('%.1f' % avgh)
+                    avgt = ('%.1f' % avgt)
                     sql(avgh,avgt)
                     t = 0
                     i = 0

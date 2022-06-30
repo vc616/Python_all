@@ -1,12 +1,18 @@
 import socket
+import json
 if __name__ == '__main__':
     # 1 创建客户端套接字对象tcp_client_1
     # 参数介绍：AF_INET 代表IPV4类型, SOCK_STREAM代表tcp传输协议类型 ,注：AF_INET6代表IPV6
     # 2 通过客户端套接字的connect方法与服务器套接字建立连接  
     # 参数介绍：前面的ip地址代表服务器的ip地址，后面的61234代表服务端的端口号 。
+    d =  {'Name': '客户端A', '温度': 7, '湿度': 14}
     while 1:
-        s = input("输入要发送的内容：")
-        s = "客户端A："+ s
+        d['温度'] = input("输入温度：")
+        d['湿度'] = input("输入湿度：")
+        
+        s = json.dumps(d)
+
+
         tcp_client_1 = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         tcp_client_1.connect(("192.168.6.7",61234))
 

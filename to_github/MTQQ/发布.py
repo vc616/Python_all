@@ -1,17 +1,19 @@
 # python 3.6
+import sys
+import hashlib
 
 import random
 import time
 
 from paho.mqtt import client as mqtt_client
 
-
 broker = 'broker.emqx.io'
 port = 1883
 topic = "51660180"
+topic = hashlib.md5(b'GeeksforGeeks').hexdigest()
+print(topic)
 # generate client ID with pub prefix randoml
 client_id = f'python-mqtt-{random.randint(0, 1000)}'
-
 
 def connect_mqtt():
     def on_connect(client, userdata, flags, rc):
@@ -29,7 +31,9 @@ def connect_mqtt():
 def publish(client):
     msg_count = 0
     while True:
-        time.sleep(1)
+        # topic = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+
+        time.sleep(3)
         msg = f"messages: {msg_count}"
         result = client.publish(topic, msg)
         # result: [0, 1]

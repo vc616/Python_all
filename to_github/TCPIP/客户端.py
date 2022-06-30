@@ -1,25 +1,27 @@
-# 导入socket库:
 import socket
-# 创建一个socket:
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# 建立连接:
-s.connect(('www.sina.com.cn', 443))
-# 发送数据:
-s.send(b'GET / HTTP/1.1\r\nHost: www.sina.com.cn\r\nConnection: close\r\n\r\n')
-# 接收数据:
-buffer = []
-while True:
-# 每次最多接收1k字节:    
-    d = s.recv(1024)
-    if d:        
-        buffer.append(d)
-    else:
-        break
-data = b''.join(buffer)
-# 关闭连接:
-s.close()
-header, html = data.split(b'\r\n\r\n', 1)
-print(header.decode('utf-8'))
-# 把接收的数据写入文件:
-with open('sina.html', 'wb') as f:
-    f.write(html)
+if __name__ == '__main__':
+    # 1 创建客户端套接字对象tcp_client_1
+    # 参数介绍：AF_INET 代表IPV4类型, SOCK_STREAM代表tcp传输协议类型 ,注：AF_INET6代表IPV6
+    # 2 通过客户端套接字的connect方法与服务器套接字建立连接  
+    # 参数介绍：前面的ip地址代表服务器的ip地址，后面的61234代表服务端的端口号 。
+    while 1:
+        s = input("输入要发送的内容：")
+        s = "客户端A："+ s
+        tcp_client_1 = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        tcp_client_1.connect(("192.168.6.7",61234))
+
+        # 将编号好的数据存到变量send_data中，注：encode(encoding='utf-8)是将数据转换成utf-8的格式发送给服务器
+        send_data = s.encode(encoding='utf-8')
+        
+        # 3 通过客户端套接字的send方法将数据发送给服务器
+        tcp_client_1.send(send_data)
+
+        # 4 通过客户端套接字的recv方法来接受服务器返回的数据存到变量recv_data中，1024是可接收的最大字节数。
+        recv_data = tcp_client_1.recv(1024)
+        
+        # 将接收到的服务器数据recv_data通过decode方法解码为utf-8
+        print(recv_data.decode(encoding = 'utf-8'))
+
+        # 5 最后关闭客户端套接字连接
+        tcp_client_1.close()
+

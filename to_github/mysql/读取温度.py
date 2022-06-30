@@ -7,7 +7,7 @@ db = pymysql.connect(host= '111.207.218.252', port= 8016, user= 'root', password
 cursor = db.cursor()
 
 # SQL 查询语句
-sql = """SELECT * FROM test.温度 温 where `time` > (NOW()- INTERVAL 1 HOUR )"""
+sql = """SELECT * FROM test.温度 温 where `time` > (NOW()- INTERVAL 12 HOUR )"""
 
 try:
    s = 0

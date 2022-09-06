@@ -1,18 +1,17 @@
 from PyQt5 import QtCore, QtWidgets
+import sys
+
+
 from PyQt5.QtWidgets import *
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QFileDialog
-# import xlrd
-# from xlutils.copy import copy
 import re
-# import numpy as npimport openpyxl
 from openpyxl.styles import PatternFill
-# from openpyxl.styles import numbers
 from copy import copy
 import openpyxl
+import os
 
 import winreg
 # 获取桌面路径
+
 def get_desktop():
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders')
     return winreg.QueryValueEx(key, 'Desktop')[0]
@@ -21,10 +20,13 @@ def get_desktop():
 class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self):
-        super(Ui_MainWindow, self).__init__()
-        self.setupUi(self)
-        self.retranslateUi(self)
+        super(Ui_MainWindow, self).__init__()        
+        self.setupUi(self)        
+        # self.retranslateUi(self)
         self.fileName1 = ""
+        self.setAcceptDrops(True) #文件拖入功能启用
+        # self.setDragEnabled(True)
+        #self.setupUi(MainWindow)
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -60,10 +62,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         MainWindow.setTabOrder(self.checkBox, self.lineEdit)
         # MainWindow.setTabOrder(self.checkBox, self.lineEdit)
         # self.open.clicked.connect(self.openfile)
-
+        
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "工艺清单数据处理"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "请将要处理的表格拖入此窗口，然后点击确定"))
         self.checkBox.setText(_translate("MainWindow", "CheckBox"))
         self.open.setText(_translate("MainWindow", "打开"))
         self.open_2.setText(_translate("MainWindow", "确定"))
@@ -80,18 +82,41 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def openfile(self):
         # openfile_name = QFileDialog.getOpenFileName(self,'选择文件','','Excel files(*.xlsx , *.xls)')
-        self.fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", get_desktop(),"Excel Files (*.xlsx)")  # 设置文件扩展名过滤,注意用双分号间隔
+        self.fileName1, filetype = QFileDialog.getOpenFileName(self, "选取文件", get_desktop(),"Excel Files (*.xlsx")  # 设置文件扩展名过滤,注意用双分号间隔
         print("打开文件名：", self.fileName1)
         self.lineEdit.setText(self.fileName1)
+
+    def dragEnterEvent(self, event):
+        # print("ddddddd")
+        #self.fileName1 = os.path.dirname((event.mimeData().urls())[0].toLocalFile())     
+        n =  event.mimeData().text()[8:]     
+        if n.endswith(".xlsx"):
+            self.fileName1 = n   
+            print("打开文件名：", self.fileName1)
+            self.lineEdit.setText(self.fileName1) 
+            self.lineEdit.repaint()
+        event.accept()
+   
 
     def excel_ds(self):
         tablename = self.fileName1
         if tablename.endswith(".xlsx"):
             newtable = tablename.replace(".xlsx", "(电气).xlsx")
-        # if tablename.endswith(".xls"):
-            # newtable = tablename.replace(".xls", "(电气).xls")
-        # print("新文件名：", newtable)
-        book1 = openpyxl.load_workbook(tablename)
+            print(newtable)
+            s1 = newtable[:-5]
+            print(s1)
+
+            s = 1
+            while os.path.exists(newtable):  
+
+                newtable = s1 +"("+ str(s)+")"+".xlsx"
+
+                print(s,newtable)
+                s = s +1
+                if s > 50:
+                    break         
+        
+        book1 = openpyxl.load_workbook(tablename, data_only=True)
         # print(book1.sheetnames)
         w1 = book1[book1.sheetnames[0]]
         max_r = w1.max_row
@@ -201,6 +226,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                             # print("S2:", s2)
                             s3 = float(s2[:len(s2) - 2])
                             w1.cell(row=i,column=f_kw,value=s3).fill = PatternFill(fill_type='solid', start_color='00DB00')
+                            # print(t,type(t),type(s3))
                             w1.cell(row=i,column=f_skw,value=t*s3)
                             # ws.write(i, f_kw, s3)
                             # ws.write(i, f_skw, t * s3)
@@ -234,7 +260,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                         else:
                             # w1.cell(row=i,column=f_kw).fill = PatternFill(fill_type='solid', start_color='00DB00')
                             #print("pass")
-                            pass
+                            pass                
+                w1.cell(row=max_r+1,column=f_skw-1,value="合计：")  
                 w1.cell(row=max_r+1,column=f_skw,value=sum_kw)  
                 w1.cell(row=max_r+1,column=f_bp,value=sum_bp) 
                 w1.cell(row=max_r+1,column=f_zq,value=sum_zq) 
@@ -262,11 +289,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
-    import sys
+    myapp = QApplication(sys.argv)
+    myDlg = Ui_MainWindow()
+    myDlg.show()
+    sys.exit(myapp.exec_())
 
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+

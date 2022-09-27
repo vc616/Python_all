@@ -11,6 +11,7 @@ import os
 
 import winreg
 # 获取桌面路径
+ATV610 = {"0.25":1253.0 ,"0.5":1253.0 ,"0.75":1253.0 ,"1.5":1085.0 ,"1.1":1085.0 ,"2.2":1785.0,"3.0":1785.0 ,"4.0":1513.2 ,"5.5":2318.0 ,"7.5":2578.0 ,"11.0":3145.0 ,"13.0":4463.0 ,"15.0":4463.0 ,"18.0":5439.0 ,"18.5":5439.0 ,"22.0":5696.0 ,"30.0":7215.0 ,"37.0":8584.0 ,"45.0":10080.0 ,"55.0":11880.0 ,"75.0":15600.0 ,"90.0":18049.0 ,"132.0":22865.0 }
 
 def get_desktop():
     key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders')
@@ -96,6 +97,36 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             self.lineEdit.setText(self.fileName1) 
             self.lineEdit.repaint()
         event.accept()
+
+
+    def kongjian(self,bp,kw):        
+        if bp :
+            if kw <=7.5:
+                return 0.13
+            if kw <=15 and kw >7.5:
+                return 0.15
+            if kw <=22 and  kw >15:
+                return 0.19
+            if kw <=45 and  kw >22:
+                return 0.21
+            if kw <=90 and  kw >45:
+                return 0.26
+            if  kw >90:
+                return 0.3   
+        else:
+            return 0.08
+    def jiage(self,bp,kw,kj):
+        k1 = str(kw)
+        if bp :
+            try:
+                return(kj*10000+1200 + ATV610[k1]*1.4)    
+            except:
+                return 0        
+        else:
+            return 1614
+
+
+
    
 
     def excel_ds(self):
@@ -126,6 +157,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         tj = [0]
 
         print("总行数：", max_r,"总列数：", max_c)
+        print("正在查找标题行……")
 
         for i in range(max_r):
             i = i +1
@@ -142,6 +174,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         # print(tj)
         bth = tj.index(max(tj))
         print("标题行：", bth)
+        print("查找规格和数量所在地列……")
 
         # print(tj[bth])
         if tj[bth] > 3:
@@ -150,9 +183,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 # print(cell.value)
                 y.append(cell.value)
             # y = sheet.row_values(bth)
-            print(y)
-            f_guige = 1000
-            f_num = 1000
+            # print(y)
+            f_guige = 10000
+            f_num = 10000
             for i in range(len(y)):
                 if "规格" in str(y[i]):
                     print(y[i], "第", i, "列")
@@ -163,6 +196,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             # ff = w1.cell(row = bth,column=f_guige).font
             # print(type(ff))
             # print(Font(name=u'宋体', size=12, bold=True, color='FF0000'))
+            print("开始分析表格……")
 
             f_kw = max_c + 1
             w1.cell(row=bth, column=f_kw, value="设备功率").fill = PatternFill(fill_type='solid', start_color='00DB00')
@@ -196,6 +230,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             w1.cell(row=bth, column=f_other, value=">75kW").fill = PatternFill(fill_type='solid', start_color='00DB00')
             w1.cell(row=bth, column=f_other).font =copy(w1.cell(row = bth,column=f_guige).font)
             w1.cell(row=bth, column=f_other).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_kj = max_c + 9
+            w1.cell(row=bth, column=f_kj, value="占用柜内空间").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_kj).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_kj).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+            f_jg = max_c + 10
+            w1.cell(row=bth, column=f_jg, value="价格").fill = PatternFill(fill_type='solid', start_color='00DB00')
+            w1.cell(row=bth, column=f_jg).font =copy(w1.cell(row = bth,column=f_guige).font)
+            w1.cell(row=bth, column=f_jg).alignment =copy(w1.cell(row = bth,column=f_guige).alignment)
+
             sum_kw = 0.0
             sum_zq = 0
             sum_bp = 0
@@ -203,7 +246,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             sum_22 = 0
             sum_75 = 0
             sum_other = 0
-            if f_guige == 1000 or f_num == 1000:
+            sum_kongjian = 0
+            sum_jiage =  0
+            if f_guige == 10000 or f_num == 10000:
                 print("在标题行中未找到规格或数量列")
             else:
                 for i in range(max_r):  # 获取excel中有多少行
@@ -257,6 +302,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                     w1.cell(row=i,column=f_other,value=t)
                                     # ws.write(i, f_other, t)
                                     sum_other = sum_other + t
+                            #计算占用空间
+                            kj = self.kongjian(k1,s3)*t
+                            w1.cell(row=i,column=f_other+1,value=kj)
+                            sum_kongjian = sum_kongjian + kj
+                            #计算回路价格
+                            jiage = self.jiage(k1,s3,kj)*t
+                            w1.cell(row=i,column=f_other+2,value=jiage)
+                            sum_jiage = sum_jiage + jiage
+
                         else:
                             # w1.cell(row=i,column=f_kw).fill = PatternFill(fill_type='solid', start_color='00DB00')
                             #print("pass")
@@ -269,15 +323,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                 w1.cell(row=max_r+1,column=f_22,value=sum_22) 
                 w1.cell(row=max_r+1,column=f_75,value=sum_75) 
                 w1.cell(row=max_r+1,column=f_other,value=sum_other) 
+                w1.cell(row=max_r+1,column=f_other+1,value=sum_kongjian) 
+                w1.cell(row=max_r+1,column=f_other+2,value=sum_jiage) 
 
-                # ws.write(i + 1, f_skw, sum_kw)
-                # ws.write(i + 1, f_bp, sum_bp)
-                # ws.write(i + 1, f_zq, sum_zq)
-                # ws.write(i + 1, f_11, sum_11)
-                # ws.write(i + 1, f_22, sum_22)
-                # ws.write(i + 1, f_75, sum_75)
-                # ws.write(i + 1, f_other, sum_other)
-                # #print("测试点02")
 
         else:
             print("未找到标题行")
